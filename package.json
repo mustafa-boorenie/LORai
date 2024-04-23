@@ -1,0 +1,30 @@
+{
+  "name": "lorai",
+  "version": "1.0.0",
+  "description": "an AI that reads your letters of recommendation.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mustafa-boorenie/LORai.git"
+  },
+  "author": "Mustafa Boorenie",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mustafa-boorenie/LORai/issues"
+  },
+  "homepage": "https://github.com/mustafa-boorenie/LORai#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "openai": "^4.38.3",
+    "pdf-to-img": "^2.1.2",
+    "pdf2json": "^3.0.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.43.1",
+    "@types/node": "^20.12.7"
+  }
+}
