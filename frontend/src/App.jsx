@@ -13,10 +13,11 @@ function App() {
   async function handleClick(e) {
     e.preventDefault();
     try {
-      const data = await axios.post(`http://localhost:3000/pdf` , formData);
+      const data = await axios.post(`http://localhost:3000/pdf` , {formData});
       setReponse(data.data);
     } catch (error) {
       console.log(error)
+      setReponse(error.toString());
     }
   }
 

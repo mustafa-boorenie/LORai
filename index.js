@@ -20,19 +20,25 @@ app.listen(3000 , () => {
 })
 
 app.post(`/:pdf` , async (req , res) => {
-    var pdf = req.params.pdf;
+    var pdf = req.params.pdf.body;
     try {
         pdfparser.loadPDF(pdf);
-        const completions = await openai.completions.create({
-            messages: [{role : "system", content : pdf}] , 
-            model: "gpt-4-turbo",
-            response_format: { type: "json_object" } ,
-            seed: "123"});
-    
-        res.json(completions.choices[0].message.conent);
+        pdfparser.on('pdfParser_dataReady' , async pdfData => {
+            const text = pdfparser.getRawTextContent(pdf);
+            const completions = await openai.completions.create({
+                messages: [{role : "system", content : text}] , 
+                model: "gpt-4-turbo",
+                response_format: { type: "json_object" } ,
+                seed: "123"});
+            res.json(completions.choices[0].message.content);
+        });
+        pdfparser.on('pdfParser_dataError', err => {
+            throw Error(err.parserError);
+        });
+
     } catch (error) {
         console.log(error);
-        res.json(error);
+        res.json(error)
     }
 
     
