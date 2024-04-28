@@ -21,6 +21,8 @@
     "axios": "^1.6.8",
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "fs": "^0.0.1-security",
+    "multer": "^1.4.5-lts.1",
     "openai": "^4.38.3",
     "pdf-to-img": "^2.1.2",
     "pdf2json": "^3.0.5"

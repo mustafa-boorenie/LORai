@@ -1,45 +1,62 @@
-// Index File
-
 import express from 'express';
-import OpenAI from 'openai';
+import path from 'path';
 import cors from 'cors';
-import Pdfparser from 'pdf2json';
-
-// require('dotenv').config();
+import { fileURLToPath } from 'url';
+import multer from 'multer';
+import PDFParser from 'pdf2json'; 
+import OpenAI from 'openai';
 
 const app = express();
-const openai = new OpenAI();
-const pdfparser = new Pdfparser();
-
+var openai = new OpenAI();
+app.use(express.json()); 
+app.use(cors());
 app.use(express.static('./frontend/dist'));
-app.use(express.json());
-app.use(cors())
+const upload = multer({ dest: 'uploads/' }); 
+app.post('/upload', upload.single('pdf'),  async (req, res) => {
+    if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+    } else {
+        console.log('Uploaded file:', req.file.path); // This will give you the path of the uploaded file
+        console.log(`File path: ${JSON.stringify(req.body)}`);
+        let pdfparser = new PDFParser();
+        pdfparser.loadPDF(req.file.path);
+        pdfparser.on("pdfParser_dataReady", async (pdf) => {
 
-app.listen(3000 , () => {
-    console.log(`Click here http://localhost:3000`);
-})
+            try {
+                const text = JSON.stringify(pdf);
+                const completions = await openai.chat.completions.create(
+                    {
+                        model: "gpt-4-turbo",
+                        messages: [
+                            {role: 'system' , content: 'Summarize this text in 200 words'},
+                            {role: 'system' , content : `${text}`}
+                        ],
+                        max_tokens: 4000
+                    })            
+                    res.json({ response: completions.choices[0].message.content });
+            } catch (error) {
+                console.log(error);
+                res.status(400).json({error: "HTTP Request error" , details: error.parserError});
+            }
+        })
 
-app.post(`/:pdf` , async (req , res) => {
-    var pdf = req.params.pdf.body;
-    try {
-        pdfparser.loadPDF(pdf);
-        pdfparser.on('pdfParser_dataReady' , async pdfData => {
-            const text = pdfparser.getRawTextContent(pdf);
-            const completions = await openai.completions.create({
-                messages: [{role : "system", content : text}] , 
-                model: "gpt-4-turbo",
-                response_format: { type: "json_object" } ,
-                seed: "123"});
-            res.json(completions.choices[0].message.content);
+        pdfparser.on("pdfParser_dataError", err => {
+            res.status(500).json({ error: "PDF parsing failed", details: err.parserError });
         });
-        pdfparser.on('pdfParser_dataError', err => {
-            throw Error(err.parserError);
-        });
 
-    } catch (error) {
-        console.log(error);
-        res.json(error)
+
+
     }
 
-    
-})
+    // Assuming you're uploading the PDF in a way that it's accessible
+    // // Path to the PDF is hardcoded for simplicity here
+    // const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    // let pdfPath = path.resolve(__dirname, "../pdfs/testPdf.pdf");
+
+
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server running on port http://localhost:${PORT}`);
+});
