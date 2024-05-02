@@ -47,7 +47,7 @@ function App() {
     <form>
       <input type='file' accept='.pdf' onChange={(e) => handleUpload(e)}/>
       <button className='uploadBtn' onClick={(e) => handleClick(e)}>Upload</button>
-      {response && <h3>{response.response}</h3>}
+      {response && <h4>{response.response}</h4>}
     </form>
     </>
   )

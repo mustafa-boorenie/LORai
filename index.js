@@ -1,7 +1,5 @@
 import express from 'express';
-import path from 'path';
 import cors from 'cors';
-import { fileURLToPath } from 'url';
 import multer from 'multer';
 import PDFParser from 'pdf2json'; 
 import OpenAI from 'openai';
@@ -28,7 +26,7 @@ app.post('/upload', upload.single('pdf'),  async (req, res) => {
                     {
                         model: "gpt-4-turbo",
                         messages: [
-                            {role: 'system' , content: 'Summarize this text in 200 words'},
+                            {role: 'system' , content: "Read this letter of recommendation. Provide a qualitative score out of 100 and feedback in 200 words. The feedback should be structured like this: Score - Positive - Negative - Positive. And you should end with a one sentence SMART goal to improve this letter of recommendation. Use  \n for new paragraphs"},
                             {role: 'system' , content : `${text}`}
                         ],
                         max_tokens: 4000
@@ -47,11 +45,6 @@ app.post('/upload', upload.single('pdf'),  async (req, res) => {
 
 
     }
-
-    // Assuming you're uploading the PDF in a way that it's accessible
-    // // Path to the PDF is hardcoded for simplicity here
-    // const __dirname = path.dirname(fileURLToPath(import.meta.url));
-    // let pdfPath = path.resolve(__dirname, "../pdfs/testPdf.pdf");
 
 
 });
