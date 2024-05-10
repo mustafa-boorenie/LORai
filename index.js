@@ -26,7 +26,7 @@ app.post('/upload', upload.single('pdf'),  async (req, res) => {
                     {
                         model: "gpt-4-turbo",
                         messages: [
-                            {role: 'system' , content: "Read this letter of recommendation. Provide a qualitative score out of 100 and feedback in 200 words. The feedback should be structured like this: Score - Positive - Negative - Positive. And you should end with a one sentence SMART goal to improve this letter of recommendation. Use  \n for new paragraphs"},
+                            {role: 'system' , content: "Read this letter of recommendation. Provide a qualitative score out of 100 and feedback in 200 words. Respond with the following headings: score,  Positives -  Negative - , Goal -. Always have a one sentence SMART goal to improve this letter of recommendation."},
                             {role: 'system' , content : `${text}`}
                         ],
                         max_tokens: 4000
